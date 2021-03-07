@@ -34,7 +34,7 @@ struct ContentView: View {
     
     mutating func initBoard() {
         
-        let initialBoard = "p7|8|8|8|8|8|8|p7"
+        let initialBoard = "ppppp1pp|8|8|8|8|8|8|p7"
         
         let decodedBoard = decodeBoardPiecesString(board: initialBoard)
         
@@ -60,7 +60,7 @@ struct ContentView: View {
                 break
             default:
                 if let spaces = Int(String(square)) {
-                    for _ in 0...spaces {
+                    for _ in 1...spaces {
                         a_BoardSquare.append(PieceEnum.empty.inicialize)
                     }
                 }
