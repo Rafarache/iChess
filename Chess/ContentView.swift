@@ -33,15 +33,41 @@ struct ContentView: View {
     }
     
     mutating func initBoard() {
+        
+        let initialBoard = "p7|8|8|8|8|8|8|p7"
+        
+        let decodedBoard = decodeBoardPiecesString(board: initialBoard)
+        
         for row in 0...7 {
             for collum in 0...7 {
                 if isOddNumber(collum) {
-                    self.a_BoardSquare.append(BoardSquare(color: isOddNumber(row) ? colorOne : colorTwo))
+                    self.a_BoardSquare.append(BoardSquare(color: isOddNumber(row) ? colorOne : colorTwo, piece: decodedBoard[row * 8 + collum]))
                 } else {
-                    self.a_BoardSquare.append(BoardSquare(color: isOddNumber(row) ? colorTwo : colorOne))
+                    self.a_BoardSquare.append(BoardSquare(color: isOddNumber(row) ? colorTwo : colorOne, piece: decodedBoard[row * 8 + collum]))
                 }
             }
         }
+    }
+    
+    func decodeBoardPiecesString(board : String) -> [Piece] {
+        var a_BoardSquare = [Piece]()
+        
+        for square in board {
+            switch square {
+            case "p":
+                a_BoardSquare.append(PieceEnum.lightPawn.inicialize)
+            case "|":
+                break
+            default:
+                if let spaces = Int(String(square)) {
+                    for _ in 0...spaces {
+                        a_BoardSquare.append(PieceEnum.empty.inicialize)
+                    }
+                }
+            }
+        }
+        
+        return a_BoardSquare
     }
     
     func isOddNumber(_ number: Int) -> Bool {

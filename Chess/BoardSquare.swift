@@ -10,21 +10,24 @@ import SwiftUI
 struct BoardSquare: View {
     
     var color : Color
+    var piece : Piece
+    
+    var size : CGFloat = 100
     
     var body: some View {
         ZStack {
             Rectangle()
                 .foregroundColor(color)
-                .frame(width: 100, height: 100)
-            Image("darkPawn")
+                .frame(width: size, height: size)
+            Image(piece.image)
                 .resizable()
-                .frame(width: 100, height: 100, alignment: .center)
+                .frame(width: size, height: size, alignment: .center)
         }
     }
 }
 
 struct BoardSquare_Previews: PreviewProvider {
     static var previews: some View {
-        BoardSquare(color: .red)
+        BoardSquare(color: .red, piece: PieceEnum.lightPawn.inicialize)
     }
 }
