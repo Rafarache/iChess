@@ -55,13 +55,13 @@ struct ContentView: View {
         for square in board {
             switch square {
             case "p":
-                a_BoardSquare.append(PieceEnum.lightPawn.inicialize)
+                a_BoardSquare.append(Piece.lightPawn)
             case "|":
                 break
             default:
                 if let spaces = Int(String(square)) {
                     for _ in 1...spaces {
-                        a_BoardSquare.append(PieceEnum.empty.inicialize)
+                        a_BoardSquare.append(Piece.empty)
                     }
                 }
             }

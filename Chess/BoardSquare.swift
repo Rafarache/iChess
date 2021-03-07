@@ -28,6 +28,6 @@ struct BoardSquare: View {
 
 struct BoardSquare_Previews: PreviewProvider {
     static var previews: some View {
-        BoardSquare(color: .red, piece: PieceEnum.lightPawn.inicialize)
+        BoardSquare(color: .red, piece: Piece.lightPawn)
     }
 }
