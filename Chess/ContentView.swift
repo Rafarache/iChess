@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     
     
-    var colorOne: Color = .black
+    var colorOne: Color = .green
     var colorTwo: Color = .white
     
     var body: some View {
@@ -20,9 +20,15 @@ struct ContentView: View {
                     ForEach(0..<8) { collum in
                         VStack(spacing: 0) {
                             if isOddNumber(number: row) {
-                                Rectangle()
-                                    .foregroundColor(isOddNumber(number: collum) ? colorOne : colorTwo)
-                                    .frame(width: 100, height: 100)
+                                ZStack {
+                                    Rectangle()
+                                        .foregroundColor(isOddNumber(number: collum) ? colorOne : colorTwo)
+                                        .frame(width: 100, height: 100)
+                                    Image("darkPawn")
+                                        .resizable()
+                                        .frame(width: 100, height: 100, alignment: .center)
+                                }
+
                             }
                             else {
                                 Rectangle()
