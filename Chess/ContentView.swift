@@ -34,7 +34,7 @@ struct ContentView: View {
     
     mutating func initBoard() {
         
-        let initialBoard = "ppppp1pp|8|8|8|8|8|8|p7"
+        let initialBoard = "RNBQKBNR|PPPPPPPP|8|8|8|8|pppppppp|rnbqkbnr"
         
         let decodedBoard = decodeBoardPiecesString(board: initialBoard)
         
@@ -54,16 +54,26 @@ struct ContentView: View {
         
         for square in board {
             switch square {
-            case "p":
-                a_BoardSquare.append(Piece.lightPawn)
-            case "|":
-                break
+            case "p": a_BoardSquare.append(Piece.lightPawn); break
+            case "P": a_BoardSquare.append(Piece.darkPawn); break
+            case "q": a_BoardSquare.append(Piece.lightQueen); break
+            case "Q": a_BoardSquare.append(Piece.darkQueen); break
+            case "k": a_BoardSquare.append(Piece.lightKing); break
+            case "K": a_BoardSquare.append(Piece.darkKing); break
+            case "n": a_BoardSquare.append(Piece.lightKnight); break
+            case "N": a_BoardSquare.append(Piece.darkKnight); break
+            case "b": a_BoardSquare.append(Piece.lightBishop); break
+            case "B": a_BoardSquare.append(Piece.darkBishop); break
+            case "r": a_BoardSquare.append(Piece.lightRook); break
+            case "R": a_BoardSquare.append(Piece.darkRook); break
+            case "|": break
             default:
                 if let spaces = Int(String(square)) {
                     for _ in 1...spaces {
                         a_BoardSquare.append(Piece.empty)
                     }
                 }
+                break
             }
         }
         

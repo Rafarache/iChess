@@ -8,7 +8,12 @@
 import Foundation
 
 enum Piece : String {
-    case lightPawn
+    case lightPawn, darkPawn
+    case lightKing, darkKing
+    case lightQueen, darkQueen
+    case lightKnight, darkKnight
+    case lightBishop, darkBishop
+    case lightRook, darkRook
     case empty
     
     var image : String {
