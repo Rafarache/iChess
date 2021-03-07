@@ -11,6 +11,7 @@
 		5688AC3825F44EF800ACC072 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5688AC3725F44EF800ACC072 /* ContentView.swift */; };
 		5688AC3A25F44EFA00ACC072 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5688AC3925F44EFA00ACC072 /* Assets.xcassets */; };
 		5688AC3D25F44EFA00ACC072 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5688AC3C25F44EFA00ACC072 /* Preview Assets.xcassets */; };
+		5688AC4725F4583E00ACC072 /* BoardSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5688AC4625F4583E00ACC072 /* BoardSquare.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,7 @@
 		5688AC3C25F44EFA00ACC072 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5688AC3E25F44EFA00ACC072 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5688AC3F25F44EFA00ACC072 /* Chess.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Chess.entitlements; sourceTree = "<group>"; };
+		5688AC4625F4583E00ACC072 /* BoardSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardSquare.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 			children = (
 				5688AC3525F44EF800ACC072 /* ChessApp.swift */,
 				5688AC3725F44EF800ACC072 /* ContentView.swift */,
+				5688AC4625F4583E00ACC072 /* BoardSquare.swift */,
 				5688AC3925F44EFA00ACC072 /* Assets.xcassets */,
 				5688AC3E25F44EFA00ACC072 /* Info.plist */,
 				5688AC3F25F44EFA00ACC072 /* Chess.entitlements */,
@@ -140,6 +143,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5688AC4725F4583E00ACC072 /* BoardSquare.swift in Sources */,
 				5688AC3825F44EF800ACC072 /* ContentView.swift in Sources */,
 				5688AC3625F44EF800ACC072 /* ChessApp.swift in Sources */,
 			);
