@@ -7,24 +7,51 @@
 
 import SwiftUI
 
+class Board: ObservableObject {
+    
+    private init() { }
+    static let shared = Board()
+    @Published var globalOffset : CGSize = CGSize.zero
+    @Published var piece : Piece = Piece.empty
+    @Published var piecePosition : Int = -1
+}
+
 struct ContentView: View {
+    
+    @ObservedObject var board : Board = .shared
     
     var a_BoardSquare = [BoardSquare]()
     
     var colorOne: Color = .green
     var colorTwo: Color = .white
     
+    let squareSize = CGFloat(60)
+    
     init() {
         initBoard()
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            ForEach(0..<8) { row in
-                HStack(spacing: 0) {
-                    ForEach(0..<8) { collum in
-                        VStack(spacing: 0) {
-                            a_BoardSquare[row * 8 + collum]
+        ZStack {
+            VStack(spacing: 0) { ForEach(0..<8) { row in
+                    HStack(spacing: 0) { ForEach(0..<8) { collum in
+                        a_BoardSquare[row * 8 + collum]
+                        }
+                    }
+                }
+            }
+            VStack(spacing: 0) { ForEach(0..<8) { row in
+                    HStack(spacing: 0) { ForEach(0..<8) { collum in
+                        if (row * 8 + collum == board.piecePosition) {
+                            Image(board.piece.image)
+                                .frame(width: squareSize, height: squareSize, alignment: .center)
+                                .offset(board.globalOffset)
+                            }
+                        else {
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .frame(width: squareSize, height: squareSize, alignment: .center)
+                            }
                         }
                     }
                 }
@@ -40,11 +67,17 @@ struct ContentView: View {
         
         for row in 0...7 {
             for collum in 0...7 {
-                if isOddNumber(collum) {
-                    self.a_BoardSquare.append(BoardSquare(color: isOddNumber(row) ? colorOne : colorTwo, piece: decodedBoard[row * 8 + collum]))
-                } else {
-                    self.a_BoardSquare.append(BoardSquare(color: isOddNumber(row) ? colorTwo : colorOne, piece: decodedBoard[row * 8 + collum]))
+                var color = colorOne
+                if isOddNumber(collum) != isOddNumber(row) {
+                    color = colorTwo
                 }
+                self.a_BoardSquare.append(
+                    BoardSquare(
+                        color: color,
+                        piece: decodedBoard[row * 8 + collum],
+                        size: squareSize,
+                        position: row * 8 + collum)
+                )
             }
         }
     }

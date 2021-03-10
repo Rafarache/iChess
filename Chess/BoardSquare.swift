@@ -11,23 +11,44 @@ struct BoardSquare: View {
     
     var color : Color
     var piece : Piece
+    var size : CGFloat
+    var position : Int
     
-    var size : CGFloat = 100
+    @ObservedObject var board : Board = .shared
     
+    @State var isMovingPiece : Bool = false
+        
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             Rectangle()
-                .foregroundColor(color)
+                .foregroundColor(isMovingPiece ? .yellow : color)
                 .frame(width: size, height: size)
-            Image(piece.image)
-                .resizable()
-                .frame(width: size, height: size, alignment: .center)
+            if !isMovingPiece {
+                Image(piece.image)
+                    .resizable()
+                    .frame(width: size, height: size, alignment: .center)
+            }
         }
+        .gesture(DragGesture()
+                    .onChanged{ gesture in
+                        board.globalOffset = gesture.translation
+                        board.piece = piece
+                        board.piecePosition = position
+                        self.isMovingPiece = true
+                        print(gesture.location)
+                    }
+                    .onEnded{ _ in
+                        self.isMovingPiece = false
+                    }
+                 
+        )
+        .onHover(perform: { hovering in
+        })
     }
 }
 
 struct BoardSquare_Previews: PreviewProvider {
     static var previews: some View {
-        BoardSquare(color: .red, piece: Piece.lightPawn)
+        BoardSquare(color: .red, piece: Piece.lightPawn, size: 70, position: 0)
     }
 }

@@ -23,4 +23,12 @@ enum Piece : String {
     var name : String {
         return self.rawValue
     }
+    
+    var moves : [Int] {
+        switch self {
+        case .lightPawn, .darkPawn: return [8]
+        case .lightKing, .darkKing: return [-1] 
+        default: return []
+        }
+    }
 }
