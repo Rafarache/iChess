@@ -7,114 +7,42 @@
 
 import SwiftUI
 
-class Board: ObservableObject {
-    
-    private init() { }
-    static let shared = Board()
-    @Published var globalOffset : CGSize = CGSize.zero
-    @Published var piece : Piece = Piece.empty
-    @Published var piecePosition : Int = -1
-}
 
 struct ContentView: View {
     
     @ObservedObject var board : Board = .shared
     
-    var a_BoardSquare = [BoardSquare]()
-    
-    var colorOne: Color = .green
-    var colorTwo: Color = .white
-    
-    let squareSize = CGFloat(60)
     
     init() {
-        initBoard()
+        board.initBoard()
     }
     
     var body: some View {
         ZStack {
             VStack(spacing: 0) { ForEach(0..<8) { row in
                     HStack(spacing: 0) { ForEach(0..<8) { collum in
-                        a_BoardSquare[row * 8 + collum]
+                        board.a_BoardSquare[row * 8 + collum]
                         }
                     }
                 }
             }
             VStack(spacing: 0) { ForEach(0..<8) { row in
                     HStack(spacing: 0) { ForEach(0..<8) { collum in
-                        if (row * 8 + collum == board.piecePosition) {
+                        if (row * 8 + collum == board.piecePosition && board.isMovingPiece) {
                             Image(board.piece.image)
-                                .frame(width: squareSize, height: squareSize, alignment: .center)
+                                .frame(width: board.squareSize, height: board.squareSize, alignment: .center)
                                 .offset(board.globalOffset)
                             }
                         else {
                             Rectangle()
                                 .foregroundColor(.clear)
-                                .frame(width: squareSize, height: squareSize, alignment: .center)
+                                .frame(width: board.squareSize, height: board.squareSize, alignment: .center)
                             }
                         }
                     }
                 }
             }
         }
-    }
-    
-    mutating func initBoard() {
-        
-        let initialBoard = "RNBQKBNR|PPPPPPPP|8|8|8|8|pppppppp|rnbqkbnr"
-        
-        let decodedBoard = decodeBoardPiecesString(board: initialBoard)
-        
-        for row in 0...7 {
-            for collum in 0...7 {
-                var color = colorOne
-                if isOddNumber(collum) != isOddNumber(row) {
-                    color = colorTwo
-                }
-                self.a_BoardSquare.append(
-                    BoardSquare(
-                        color: color,
-                        piece: decodedBoard[row * 8 + collum],
-                        size: squareSize,
-                        position: row * 8 + collum)
-                )
-            }
-        }
-    }
-    
-    func decodeBoardPiecesString(board : String) -> [Piece] {
-        var a_BoardSquare = [Piece]()
-        
-        for square in board {
-            switch square {
-            case "p": a_BoardSquare.append(Piece.lightPawn); break
-            case "P": a_BoardSquare.append(Piece.darkPawn); break
-            case "q": a_BoardSquare.append(Piece.lightQueen); break
-            case "Q": a_BoardSquare.append(Piece.darkQueen); break
-            case "k": a_BoardSquare.append(Piece.lightKing); break
-            case "K": a_BoardSquare.append(Piece.darkKing); break
-            case "n": a_BoardSquare.append(Piece.lightKnight); break
-            case "N": a_BoardSquare.append(Piece.darkKnight); break
-            case "b": a_BoardSquare.append(Piece.lightBishop); break
-            case "B": a_BoardSquare.append(Piece.darkBishop); break
-            case "r": a_BoardSquare.append(Piece.lightRook); break
-            case "R": a_BoardSquare.append(Piece.darkRook); break
-            case "|": break
-            default:
-                if let spaces = Int(String(square)) {
-                    for _ in 1...spaces {
-                        a_BoardSquare.append(Piece.empty)
-                    }
-                }
-                break
-            }
-        }
-        
-        return a_BoardSquare
-    }
-    
-    func isOddNumber(_ number: Int) -> Bool {
-        return number % 2 == 1
     }
 }
 

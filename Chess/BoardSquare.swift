@@ -17,11 +17,12 @@ struct BoardSquare: View {
     @ObservedObject var board : Board = .shared
     
     @State var isMovingPiece : Bool = false
+    @State var isHover = false
         
     var body: some View {
         ZStack(alignment: .top) {
             Rectangle()
-                .foregroundColor(isMovingPiece ? .yellow : color)
+                .foregroundColor(isMovingPiece && piece != .empty ? .yellow : color)
                 .frame(width: size, height: size)
             if !isMovingPiece {
                 Image(piece.image)
@@ -29,20 +30,28 @@ struct BoardSquare: View {
                     .frame(width: size, height: size, alignment: .center)
             }
         }
-        .gesture(DragGesture()
+        .gesture( DragGesture()
                     .onChanged{ gesture in
                         board.globalOffset = gesture.translation
                         board.piece = piece
                         board.piecePosition = position
+                        board.isMovingPiece = true
                         self.isMovingPiece = true
-                        print(gesture.location)
                     }
                     .onEnded{ _ in
+                        board.isMovingPiece = false
                         self.isMovingPiece = false
+                        if piece != .empty {
+                            board.handlePiecePositioning()
+                        }
                     }
                  
         )
         .onHover(perform: { hovering in
+            self.isHover = hovering
+            if self.isHover == true {
+                board.piecePlacing = position
+            }
         })
     }
 }
