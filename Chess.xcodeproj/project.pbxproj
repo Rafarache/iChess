@@ -13,6 +13,7 @@
 		5688AC3D25F44EFA00ACC072 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5688AC3C25F44EFA00ACC072 /* Preview Assets.xcassets */; };
 		5688AC4725F4583E00ACC072 /* BoardSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5688AC4625F4583E00ACC072 /* BoardSquare.swift */; };
 		5688AC4B25F45BF900ACC072 /* Piece.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5688AC4A25F45BF900ACC072 /* Piece.swift */; };
+		56D9DB4225F9A54800495B21 /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D9DB4125F9A54800495B21 /* Board.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		5688AC3F25F44EFA00ACC072 /* Chess.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Chess.entitlements; sourceTree = "<group>"; };
 		5688AC4625F4583E00ACC072 /* BoardSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardSquare.swift; sourceTree = "<group>"; };
 		5688AC4A25F45BF900ACC072 /* Piece.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Piece.swift; sourceTree = "<group>"; };
+		56D9DB4125F9A54800495B21 /* Board.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				5688AC4A25F45BF900ACC072 /* Piece.swift */,
+				56D9DB4125F9A54800495B21 /* Board.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -156,6 +159,7 @@
 			files = (
 				5688AC4B25F45BF900ACC072 /* Piece.swift in Sources */,
 				5688AC4725F4583E00ACC072 /* BoardSquare.swift in Sources */,
+				56D9DB4225F9A54800495B21 /* Board.swift in Sources */,
 				5688AC3825F44EF800ACC072 /* ContentView.swift in Sources */,
 				5688AC3625F44EF800ACC072 /* ChessApp.swift in Sources */,
 			);
