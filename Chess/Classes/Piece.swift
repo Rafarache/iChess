@@ -26,7 +26,8 @@ enum Piece : String {
     
     var moves : [Int] {
         switch self {
-        case .lightPawn, .darkPawn: return [8]
+        case .lightPawn: return [-8]
+        case .darkPawn: return [8]
         case .lightKing, .darkKing: return [-1] 
         default: return []
         }

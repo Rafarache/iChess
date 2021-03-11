@@ -22,7 +22,7 @@ struct BoardSquare: View {
     var body: some View {
         ZStack(alignment: .top) {
             Rectangle()
-                .foregroundColor(isMovingPiece && piece != .empty ? .yellow : color)
+                .foregroundColor(isMovingPiece && piece != .empty ? board.auxColor.opacity(board.auxColorOpacity) : color)
                 .frame(width: size, height: size)
             if !isMovingPiece {
                 Image(piece.image)
@@ -37,6 +37,7 @@ struct BoardSquare: View {
                         board.piecePosition = position
                         board.isMovingPiece = true
                         self.isMovingPiece = true
+                        board.showPossibleMoves()
                     }
                     .onEnded{ _ in
                         board.isMovingPiece = false

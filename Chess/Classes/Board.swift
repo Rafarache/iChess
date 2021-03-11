@@ -15,6 +15,8 @@ class Board: ObservableObject {
     
     var colorOne: Color = .green
     var colorTwo: Color = .white
+    var auxColor: Color = Color.yellow
+    var auxColorOpacity: Double = Double(0.4)
     let squareSize = CGFloat(60)
     
     @Published var a_BoardSquare = [BoardSquare]()
@@ -84,7 +86,36 @@ class Board: ObservableObject {
 
     
     func handlePiecePositioning() {
+        hidePossibleMoves()
         a_BoardSquare[piecePosition].piece = Piece.empty
         a_BoardSquare[piecePlacing].piece = piece
+    }
+    
+    func showPossibleMoves() {
+        var posiblePositions = [Int]()
+        
+        for move in piece.moves {
+            let possiblePosition = move + piecePosition
+            posiblePositions.append(possiblePosition)
+            if (0 <= possiblePosition && possiblePosition <= 63) {
+                a_BoardSquare[possiblePosition].color = auxColor
+            }
+        }
+    }
+    
+    func hidePossibleMoves() {
+        var posiblePositions = [Int]()
+        
+        for move in piece.moves {
+            let possiblePosition = move + piecePosition
+            posiblePositions.append(possiblePosition)
+            if (0 <= possiblePosition && possiblePosition <= 63) {
+                var color = colorOne
+                if isOddNumber(possiblePosition / 8) != isOddNumber(possiblePosition) {
+                    color = colorTwo
+                }
+                a_BoardSquare[possiblePosition].color = color
+            }
+        }
     }
 }
