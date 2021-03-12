@@ -84,38 +84,50 @@ class Board: ObservableObject {
         return number % 2 == 1
     }
 
+    func forEachPossiblePosition(_ function : (Int)->()) {
+        for move in piece.moves {
+            let possiblePosition = move + piecePosition
+            if (0 <= possiblePosition && possiblePosition <= 63) {
+                function(possiblePosition)
+            }
+        }
+    }
+    
+    func getPossibleMoves() -> [Int] {
+        var possiblePositions = [Int]()
+        
+        for move in piece.moves {
+            let possiblePosition = move + piecePosition
+            if (0 <= possiblePosition && possiblePosition <= 63) {
+                possiblePositions.append(possiblePosition)
+            }
+        }
+        
+        return possiblePositions
+    }
     
     func handlePiecePositioning() {
-        hidePossibleMoves()
-        a_BoardSquare[piecePosition].piece = Piece.empty
-        a_BoardSquare[piecePlacing].piece = piece
-    }
-    
-    func showPossibleMoves() {
-        var posiblePositions = [Int]()
-        
-        for move in piece.moves {
-            let possiblePosition = move + piecePosition
-            posiblePositions.append(possiblePosition)
-            if (0 <= possiblePosition && possiblePosition <= 63) {
-                a_BoardSquare[possiblePosition].color = auxColor
-            }
+        hidePossibleMove()
+        if getPossibleMoves().contains(piecePlacing) {
+            a_BoardSquare[piecePosition].piece = Piece.empty
+            a_BoardSquare[piecePlacing].piece = piece
         }
     }
     
-    func hidePossibleMoves() {
-        var posiblePositions = [Int]()
-        
-        for move in piece.moves {
-            let possiblePosition = move + piecePosition
-            posiblePositions.append(possiblePosition)
-            if (0 <= possiblePosition && possiblePosition <= 63) {
-                var color = colorOne
-                if isOddNumber(possiblePosition / 8) != isOddNumber(possiblePosition) {
-                    color = colorTwo
-                }
-                a_BoardSquare[possiblePosition].color = color
-            }
-        }
+    func showPossibleMove() {
+        forEachPossiblePosition({ (possiblePosition) in
+            a_BoardSquare[possiblePosition].color = auxColor
+        })
     }
+    
+    func hidePossibleMove() {
+        forEachPossiblePosition({(possiblePosition) in
+            var color = colorOne
+            if isOddNumber(possiblePosition / 8) != isOddNumber(possiblePosition) {
+                color = colorTwo
+            }
+            a_BoardSquare[possiblePosition].color = color
+        })
+    }
+    
 }
