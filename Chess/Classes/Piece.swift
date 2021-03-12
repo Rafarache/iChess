@@ -28,7 +28,7 @@ enum Piece : String {
         switch self {
         case .lightPawn: return [-8]
         case .darkPawn: return [8]
-        case .lightKing, .darkKing: return [-1] 
+        case .lightKing, .darkKing: return [-9,-8,-7,-1,1,7,8,9]
         default: return []
         }
     }
