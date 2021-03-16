@@ -26,8 +26,8 @@ enum Piece : String {
     
     var movement : [Movement] {
         switch self {
-        case .lightPawn: return [Movement.init(x: -1, y: 0)]
-        case .darkPawn: return [Movement.init(x: 1, y: 0)]
+        case .lightPawn: return [Movement.init(x: 0, y: -1)]
+        case .darkPawn: return [Movement.init(x: 0, y: 1)]
         case .lightKing, .darkKing: return [
             Movement.init(x: 1, y: 0),
             Movement.init(x: -1, y: 0),

@@ -45,7 +45,7 @@ class Board: ObservableObject {
                         color: color,
                         piece: decodedBoard[collum * 8 + row],
                         size: squareSize,
-                        position: Location.init(x: collum, y: row))
+                        position: Location.init(x: row, y: collum))
                 )
             }
             
@@ -103,9 +103,18 @@ class Board: ObservableObject {
                 }
             }
             else {
-                let possiblePosition = Location.init(x: move.x + piecePosition.x, y: move.y + piecePosition.y)
-                if (possiblePosition.isValid()) {
-                    function(possiblePosition)
+                if piece == .lightPawn || piece == .darkPawn {
+                    var pawnAtackLocations = [
+                        Location(x: piecePosition.x + 1, y: piecePosition.y + piece.movement[0].y),
+                        Location(x: piecePosition.x - 1, y: piecePosition.y + piece.movement[0].y)
+                    ]
+                    for possibleAttack in pawnAtackLocations {
+                        if possibleAttack.isValid() { function(possibleAttack) }
+                    }
+                }
+                let possibleLocation = Location.init(x: move.x + piecePosition.x, y: move.y + piecePosition.y)
+                if (possibleLocation.isValid()) {
+                    function(possibleLocation)
                 }
             }
         }
@@ -122,25 +131,24 @@ class Board: ObservableObject {
     }
     
     func handlePiecePositioning() {
-        let possibleMoves = getPossibleMovements()
-        let filteredMoves =  possibleMoves.filter{
-            return $0.x == piecePlacing.x && $0.y == piecePlacing.y
-        }
-        let found = possibleMoves.filter{
+        let possibleMovements = getPossibleMovements()
+        let filteredMovements = filterMovements(movements: possibleMovements)
+        let found = filteredMovements.filter{
             return $0.x == piecePlacing.x && $0.y == piecePlacing.y
         }.count > 0
         if found {
-            a_BoardSquare[piecePosition.x][piecePosition.y].piece = Piece.empty
-            a_BoardSquare[piecePlacing.x][piecePlacing.y].piece = piece
+            a_BoardSquare[piecePosition.y][piecePosition.x].piece = Piece.empty
+            a_BoardSquare[piecePlacing.y][piecePlacing.x].piece = piece
         }
     }
 
     func showPossibleMovements() {
+        
         var possibleMovements = getPossibleMovements()
         var validMovements = filterMovements(movements : possibleMovements)
         
         for move in validMovements {
-            a_BoardSquare[move.x][move.y].color = auxColor
+            a_BoardSquare[move.y][move.x].color = auxColor
         }
     }
     
@@ -150,12 +158,12 @@ class Board: ObservableObject {
             if isOddNumber(possibleLocation.x) != isOddNumber(possibleLocation.y) {
                 color = colorTwo
             }
-            a_BoardSquare[possibleLocation.x][possibleLocation.y].color = color
+            a_BoardSquare[possibleLocation.y][possibleLocation.x].color = color
         })
     }
     
     func locationHasPiece(location : Location) -> Bool {
-        return a_BoardSquare[location.x][location.y].piece != .empty
+        return a_BoardSquare[location.y][location.x].piece != .empty
     }
     
     func filterMovements(movements : [Location]) -> [Location] {
@@ -163,11 +171,11 @@ class Board: ObservableObject {
         
         for move in movements {
             if locationHasPiece(location: move) {
-                if piece.pieceType != a_BoardSquare[move.x][move.y].piece.pieceType {
+                if piece.pieceType != a_BoardSquare[move.y][move.x].piece.pieceType {
                     validMovements.append(move)
                 }
             }
-            else if a_BoardSquare[move.x][move.y].piece == .empty {
+            else if a_BoardSquare[move.y][move.x].piece == .empty {
                 validMovements.append(move)
             }
         }

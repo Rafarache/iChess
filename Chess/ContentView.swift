@@ -28,7 +28,7 @@ struct ContentView: View {
             }
             VStack(spacing: 0) { ForEach(0..<8) { row in
                     HStack(spacing: 0) { ForEach(0..<8) { collum in
-                        if ( row == board.piecePosition.x  && collum == board.piecePosition.y && board.isMovingPiece) {
+                        if ( collum == board.piecePosition.x  && row == board.piecePosition.y && board.isMovingPiece) {
                             Image(board.piece.image)
                                 .frame(width: board.squareSize, height: board.squareSize, alignment: .center)
                                 .offset(board.globalOffset)
