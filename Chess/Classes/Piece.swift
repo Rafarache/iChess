@@ -24,16 +24,81 @@ enum Piece : String {
         return self.rawValue
     }
     
-    var moves : [Int] {
+    var movement : [Movement] {
         switch self {
-        case .lightPawn: return [-8]
-        case .darkPawn: return [8]
-        case .lightKing, .darkKing: return [-9,-8,-7,-1,1,7,8,9]
-        case .lightQueen, .darkQueen: return [-9,-8,-7,-1,1,7,8,9]
-        case .lightKnight, .darkKnight: return [19,-17,17,19]
-        case .lightBishop, .darkBishop: return [-9,-7,7,9]
-        case .lightRook, .darkRook: return [-8,-1,1,8]
+        case .lightPawn: return [Movement.init(x: -1, y: 0)]
+        case .darkPawn: return [Movement.init(x: 1, y: 0)]
+        case .lightKing, .darkKing: return [
+            Movement.init(x: 1, y: 0),
+            Movement.init(x: -1, y: 0),
+            Movement.init(x: 0, y: 1),
+            Movement.init(x: 0, y: -1),
+            Movement.init(x: 1, y: 1),
+            Movement.init(x: 1, y: -1),
+            Movement.init(x: -1, y: 1),
+            Movement.init(x: -1, y: -1),
+         ]
+        case .lightQueen, .darkQueen: return [
+            Movement.init(x: 1, y: 0),
+            Movement.init(x: -1, y: 0),
+            Movement.init(x: 0, y: 1),
+            Movement.init(x: 0, y: -1),
+            Movement.init(x: 1, y: 1),
+            Movement.init(x: 1, y: -1),
+            Movement.init(x: -1, y: 1),
+            Movement.init(x: -1, y: -1),
+        ]
+        case .lightKnight, .darkKnight: return [
+            Movement.init(x: 1, y: 2),
+            Movement.init(x: 1, y: -2),
+            Movement.init(x: -1, y: 2),
+            Movement.init(x: -1, y: -2),
+            Movement.init(x: 2, y: 1),
+            Movement.init(x: 2, y: -1),
+            Movement.init(x: -2, y: 1),
+            Movement.init(x: -2, y: -1),        ]
+        case .lightBishop, .darkBishop: return [
+            Movement.init(x: 1, y: 1),
+            Movement.init(x: 1, y: -1),
+            Movement.init(x: -1, y: 1),
+            Movement.init(x: -1, y: -1),
+        ]
+        case .lightRook, .darkRook: return [
+            Movement.init(x: 1, y: 0),
+            Movement.init(x: -1, y: 0),
+            Movement.init(x: 0, y: 1),
+            Movement.init(x: 0, y: -1),
+        ]
         default: return []
         }
+    }
+    
+    var movementType : String {
+        switch self {
+        case .lightPawn, .darkPawn, .lightKing, .darkKing, .lightKnight, .darkKnight: return "Fixed"
+        case .lightQueen, .darkQueen, .lightBishop, .darkBishop, .lightRook, .darkRook: return "Multiplied"
+        default: return "Fixed"
+        }
+    }
+}
+
+struct Movement {
+    var x : Int
+    var y : Int
+}
+
+
+struct Location {
+    var x : Int
+    var y : Int
+    
+    func isValid() -> Bool {
+        if (x < 0 || x > 7) {
+            return false
+        }
+        if (y < 0 || y > 7) {
+            return false
+        }
+        return true
     }
 }

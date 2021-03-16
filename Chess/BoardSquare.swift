@@ -12,7 +12,7 @@ struct BoardSquare: View {
     var color : Color
     var piece : Piece
     var size : CGFloat
-    var position : Int
+    var position : Location
     
     @ObservedObject var board : Board = .shared
     
@@ -22,7 +22,7 @@ struct BoardSquare: View {
     var body: some View {
         ZStack(alignment: .top) {
             Rectangle()
-                .foregroundColor(isMovingPiece && piece != .empty ? board.auxColor.opacity(board.auxColorOpacity) : color)
+                .foregroundColor(color)
                 .frame(width: size, height: size)
             if !isMovingPiece {
                 Image(piece.image)
@@ -43,6 +43,7 @@ struct BoardSquare: View {
                         board.isMovingPiece = false
                         self.isMovingPiece = false
                         if piece != .empty {
+                            board.hidePossibleMove()
                             board.handlePiecePositioning()
                         }
                     }
@@ -59,6 +60,6 @@ struct BoardSquare: View {
 
 struct BoardSquare_Previews: PreviewProvider {
     static var previews: some View {
-        BoardSquare(color: .red, piece: Piece.lightPawn, size: 70, position: 0)
+        BoardSquare(color: .red, piece: Piece.lightPawn, size: 70, position: Location.init(x: 0, y: 0))
     }
 }

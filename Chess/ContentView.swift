@@ -21,14 +21,14 @@ struct ContentView: View {
         ZStack {
             VStack(spacing: 0) { ForEach(0..<8) { row in
                     HStack(spacing: 0) { ForEach(0..<8) { collum in
-                        board.a_BoardSquare[row * 8 + collum]
+                        board.a_BoardSquare[row][collum]
                         }
                     }
                 }
             }
             VStack(spacing: 0) { ForEach(0..<8) { row in
                     HStack(spacing: 0) { ForEach(0..<8) { collum in
-                        if (row * 8 + collum == board.piecePosition && board.isMovingPiece) {
+                        if ( row == board.piecePosition.x  && collum == board.piecePosition.y && board.isMovingPiece) {
                             Image(board.piece.image)
                                 .frame(width: board.squareSize, height: board.squareSize, alignment: .center)
                                 .offset(board.globalOffset)

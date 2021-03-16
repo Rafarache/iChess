@@ -13,17 +13,17 @@ class Board: ObservableObject {
     private init() { }
     static let shared = Board()
     
-    var colorOne: Color = .green
-    var colorTwo: Color = .white
+    var colorOne: Color = .white
+    var colorTwo: Color = .green
     var auxColor: Color = Color.yellow
     var auxColorOpacity: Double = Double(0.4)
     let squareSize = CGFloat(60)
     
-    @Published var a_BoardSquare = [BoardSquare]()
+    @Published var a_BoardSquare = [[BoardSquare]]()
     @Published var globalOffset : CGSize = CGSize.zero
     @Published var piece : Piece = Piece.empty
-    @Published var piecePosition : Int = -1
-    @Published var piecePlacing : Int = -1
+    @Published var piecePosition : Location = Location.init(x: 0, y: 0)
+    @Published var piecePlacing : Location = Location.init(x: 0, y: 0)
     @Published var isMovingPiece : Bool = false
     
     func initBoard() {
@@ -32,20 +32,24 @@ class Board: ObservableObject {
         
         let decodedBoard = decodeBoardPiecesString(board: initialBoard)
         
-        for row in 0...7 {
-            for collum in 0...7 {
+        for collum in 0...7 {
+            var collumBoadSquares = [BoardSquare]()
+            
+            for row in 0...7 {
                 var color = colorOne
                 if isOddNumber(collum) != isOddNumber(row) {
                     color = colorTwo
                 }
-                self.a_BoardSquare.append(
+                collumBoadSquares.append(
                     BoardSquare(
                         color: color,
-                        piece: decodedBoard[row * 8 + collum],
+                        piece: decodedBoard[collum * 8 + row],
                         size: squareSize,
-                        position: row * 8 + collum)
+                        position: Location.init(x: collum, y: row))
                 )
             }
+            
+            self.a_BoardSquare.append(collumBoadSquares)
         }
     }
     
@@ -84,50 +88,66 @@ class Board: ObservableObject {
         return number % 2 == 1
     }
 
-    func forEachPossiblePosition(_ function : (Int)->()) {
-        for move in piece.moves {
-            let possiblePosition = move + piecePosition
-            if (0 <= possiblePosition && possiblePosition <= 63) {
-                function(possiblePosition)
+    func forEachPossiblePosition(_ function : (Location)->()) {
+        for move in piece.movement {
+            if piece.movementType == "Multiplied" {
+                for mult in 1...7 {
+                    var stop = false
+                    let possiblePosition = Location.init(x: (move.x * mult) + piecePosition.x, y: (move.y * mult) + piecePosition.y)
+                    if (possiblePosition.isValid() && !stop) {
+                        function(possiblePosition)
+                    }
+                    else {
+                        stop = true
+                    }
+                }
+            }
+            else {
+                let possiblePosition = Location.init(x: move.x + piecePosition.x, y: move.y + piecePosition.y)
+                if (possiblePosition.isValid()) {
+                    function(possiblePosition)
+                }
             }
         }
     }
     
-    func getPossibleMoves() -> [Int] {
-        var possiblePositions = [Int]()
+    func getPossibleMoves() -> [Location] {
+        var possiblePositions = [Location]()
         
-        for move in piece.moves {
-            let possiblePosition = move + piecePosition
-            if (0 <= possiblePosition && possiblePosition <= 63) {
-                possiblePositions.append(possiblePosition)
-            }
-        }
+        forEachPossiblePosition({ (possiblePosition) in
+            possiblePositions.append(possiblePosition)
+        })
         
         return possiblePositions
     }
     
     func handlePiecePositioning() {
-        hidePossibleMove()
-        if getPossibleMoves().contains(piecePlacing) {
-            a_BoardSquare[piecePosition].piece = Piece.empty
-            a_BoardSquare[piecePlacing].piece = piece
+        let possibleMoves = getPossibleMoves()
+        var filteredMoves =  possibleMoves.filter{
+            return $0.x == piecePlacing.x && $0.y == piecePlacing.y
+        }
+        var found = possibleMoves.filter{
+            return $0.x == piecePlacing.x && $0.y == piecePlacing.y
+        }.count > 0
+        if found {
+            a_BoardSquare[piecePosition.x][piecePosition.y].piece = Piece.empty
+            a_BoardSquare[piecePlacing.x][piecePlacing.y].piece = piece
         }
     }
-    
+
     func showPossibleMove() {
         forEachPossiblePosition({ (possiblePosition) in
-            a_BoardSquare[possiblePosition].color = auxColor
+            a_BoardSquare[possiblePosition.x][possiblePosition.y].color = auxColor
         })
     }
     
     func hidePossibleMove() {
         forEachPossiblePosition({(possiblePosition) in
             var color = colorOne
-            if isOddNumber(possiblePosition / 8) != isOddNumber(possiblePosition) {
+            if isOddNumber(possiblePosition.x) != isOddNumber(possiblePosition.y) {
                 color = colorTwo
             }
-            a_BoardSquare[possiblePosition].color = color
+            a_BoardSquare[possiblePosition.x][possiblePosition.y].color = color
         })
     }
-    
 }
