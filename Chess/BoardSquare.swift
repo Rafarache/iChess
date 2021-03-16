@@ -37,13 +37,13 @@ struct BoardSquare: View {
                         board.piecePosition = position
                         board.isMovingPiece = true
                         self.isMovingPiece = true
-                        board.showPossibleMove()
+                        board.showPossibleMovements()
                     }
                     .onEnded{ _ in
                         board.isMovingPiece = false
                         self.isMovingPiece = false
                         if piece != .empty {
-                            board.hidePossibleMove()
+                            board.hidePossibleMovements()
                             board.handlePiecePositioning()
                         }
                     }

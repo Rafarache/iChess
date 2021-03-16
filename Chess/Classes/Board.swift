@@ -88,17 +88,17 @@ class Board: ObservableObject {
         return number % 2 == 1
     }
 
-    func forEachPossiblePosition(_ function : (Location)->()) {
+    func forEachMovement(_ function : (Location)->()) {
         for move in piece.movement {
             if piece.movementType == "Multiplied" {
+                var foundFirstPiece = false
                 for mult in 1...7 {
-                    var stop = false
-                    let possiblePosition = Location.init(x: (move.x * mult) + piecePosition.x, y: (move.y * mult) + piecePosition.y)
-                    if (possiblePosition.isValid() && !stop) {
-                        function(possiblePosition)
-                    }
-                    else {
-                        stop = true
+                    let possibleLocation = Location.init(x: (move.x * mult) + piecePosition.x, y: (move.y * mult) + piecePosition.y)
+                    if (possibleLocation.isValid() && !foundFirstPiece) {
+                        function(possibleLocation)
+                        if locationHasPiece(location: possibleLocation) {
+                            foundFirstPiece = true
+                        }
                     }
                 }
             }
@@ -111,22 +111,22 @@ class Board: ObservableObject {
         }
     }
     
-    func getPossibleMoves() -> [Location] {
-        var possiblePositions = [Location]()
+    func getPossibleMovements() -> [Location] {
+        var possibleLocations = [Location]()
         
-        forEachPossiblePosition({ (possiblePosition) in
-            possiblePositions.append(possiblePosition)
+        forEachMovement({ (possibleLocation) in
+            possibleLocations.append(possibleLocation)
         })
         
-        return possiblePositions
+        return possibleLocations
     }
     
     func handlePiecePositioning() {
-        let possibleMoves = getPossibleMoves()
-        var filteredMoves =  possibleMoves.filter{
+        let possibleMoves = getPossibleMovements()
+        let filteredMoves =  possibleMoves.filter{
             return $0.x == piecePlacing.x && $0.y == piecePlacing.y
         }
-        var found = possibleMoves.filter{
+        let found = possibleMoves.filter{
             return $0.x == piecePlacing.x && $0.y == piecePlacing.y
         }.count > 0
         if found {
@@ -135,19 +135,33 @@ class Board: ObservableObject {
         }
     }
 
-    func showPossibleMove() {
-        forEachPossiblePosition({ (possiblePosition) in
-            a_BoardSquare[possiblePosition.x][possiblePosition.y].color = auxColor
+    func showPossibleMovements() {
+        var possibleMovements = getPossibleMovements()
+        var validMovements = filterMovements(movements : possibleMovements)
+        forEachMovement({ (possibleLocation) in
+            a_BoardSquare[possibleLocation.x][possibleLocation.y].color = auxColor
         })
     }
     
-    func hidePossibleMove() {
-        forEachPossiblePosition({(possiblePosition) in
+    func hidePossibleMovements() {
+        forEachMovement({(possibleLocation) in
             var color = colorOne
-            if isOddNumber(possiblePosition.x) != isOddNumber(possiblePosition.y) {
+            if isOddNumber(possibleLocation.x) != isOddNumber(possibleLocation.y) {
                 color = colorTwo
             }
-            a_BoardSquare[possiblePosition.x][possiblePosition.y].color = color
+            a_BoardSquare[possibleLocation.x][possibleLocation.y].color = color
         })
+    }
+    
+    func locationHasPiece(location : Location) -> Bool {
+        return a_BoardSquare[location.x][location.y].piece != .empty
+    }
+    
+    func filterMovements(movements : [Location]) -> [Location] {
+        var validMovements = [Location]()
+        
+        
+        
+        return validMovements
     }
 }
