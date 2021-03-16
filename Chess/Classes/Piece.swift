@@ -73,6 +73,14 @@ enum Piece : String {
         }
     }
     
+    var pieceType : String {
+        switch self {
+        case .darkPawn, .darkKing, .darkQueen, .darkKnight, .darkBishop, .darkRook: return "Dark"
+        case .lightKing, .lightPawn, .lightQueen, .lightKnight, .lightBishop, .lightRook: return "Light"
+        default: return "None"
+        }
+    }
+    
     var movementType : String {
         switch self {
         case .lightPawn, .darkPawn, .lightKing, .darkKing, .lightKnight, .darkKnight: return "Fixed"

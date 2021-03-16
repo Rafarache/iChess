@@ -138,9 +138,10 @@ class Board: ObservableObject {
     func showPossibleMovements() {
         var possibleMovements = getPossibleMovements()
         var validMovements = filterMovements(movements : possibleMovements)
-        forEachMovement({ (possibleLocation) in
-            a_BoardSquare[possibleLocation.x][possibleLocation.y].color = auxColor
-        })
+        
+        for move in validMovements {
+            a_BoardSquare[move.x][move.y].color = auxColor
+        }
     }
     
     func hidePossibleMovements() {
@@ -160,7 +161,16 @@ class Board: ObservableObject {
     func filterMovements(movements : [Location]) -> [Location] {
         var validMovements = [Location]()
         
-        
+        for move in movements {
+            if locationHasPiece(location: move) {
+                if piece.pieceType != a_BoardSquare[move.x][move.y].piece.pieceType {
+                    validMovements.append(move)
+                }
+            }
+            else if a_BoardSquare[move.x][move.y].piece == .empty {
+                validMovements.append(move)
+            }
+        }
         
         return validMovements
     }
