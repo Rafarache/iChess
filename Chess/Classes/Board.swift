@@ -103,7 +103,7 @@ class Board: ObservableObject {
                 }
             }
             else {
-                if piece == .lightPawn || piece == .darkPawn {
+                if pieceIsPawn() {
                     var pawnAtackLocations = [
                         Location(x: piecePosition.x + 1, y: piecePosition.y + piece.movement[0].y),
                         Location(x: piecePosition.x - 1, y: piecePosition.y + piece.movement[0].y)
@@ -170,16 +170,40 @@ class Board: ObservableObject {
         var validMovements = [Location]()
         
         for move in movements {
-            if locationHasPiece(location: move) {
-                if piece.pieceType != a_BoardSquare[move.y][move.x].piece.pieceType {
-                    validMovements.append(move)
+            if move.isValid() {
+                if pieceIsPawn() {
+                    if !locationHasPiece(location: move) && !isPawnAttack(movement: move) {
+                        validMovements.append(move)
+                    }
+                    if locationHasPiece(location: move) && isPawnAttack(movement: move) && isOpponetPiece(location: move) {
+                        validMovements.append(move)
+                    }
                 }
-            }
-            else if a_BoardSquare[move.y][move.x].piece == .empty {
-                validMovements.append(move)
+                else {
+                    if locationHasPiece(location: move) {
+                        if isOpponetPiece(location: move) {
+                            validMovements.append(move)
+                        }
+                    }
+                    if a_BoardSquare[move.y][move.x].piece == .empty {
+                        validMovements.append(move)
+                    }
+                }
             }
         }
         
         return validMovements
+    }
+    
+    func pieceIsPawn() -> Bool {
+        return piece == .lightPawn || piece == .darkPawn
+    }
+    
+    func isPawnAttack(movement : Location) -> Bool {
+        return piecePosition.x != movement.x
+    }
+    
+    func isOpponetPiece(location : Location) -> Bool {
+        return piece.pieceType != a_BoardSquare[location.y][location.x].piece.pieceType
     }
 }
