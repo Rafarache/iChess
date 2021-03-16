@@ -24,7 +24,7 @@ struct BoardSquare: View {
             Rectangle()
                 .foregroundColor(color)
                 .frame(width: size, height: size)
-            if !isMovingPiece {
+            if !isMovingPiece && piece.image != "empty" {
                 Image(piece.image)
                     .resizable()
                     .frame(width: size, height: size, alignment: .center)
