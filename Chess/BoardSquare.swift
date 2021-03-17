@@ -32,19 +32,23 @@ struct BoardSquare: View {
         }
         .gesture( DragGesture()
                     .onChanged{ gesture in
-                        board.globalOffset = gesture.translation
-                        board.piece = piece
-                        board.pieceLocation = position
-                        board.isMovingPiece = true
-                        self.isMovingPiece = true
-                        board.showPossibleMovements()
+                        if isPlayerTurn() {
+                            board.globalOffset = gesture.translation
+                            board.piece = piece
+                            board.pieceLocation = position
+                            board.isMovingPiece = true
+                            self.isMovingPiece = true
+                            board.showPossibleMovements()
+                        }
                     }
                     .onEnded{ _ in
-                        board.isMovingPiece = false
-                        self.isMovingPiece = false
-                        if piece != .empty {
-                            board.hidePossibleMovements()
-                            board.handlePiecePositioning()
+                        if isPlayerTurn() {
+                            board.isMovingPiece = false
+                            self.isMovingPiece = false
+                            if piece != .empty {
+                                board.hidePossibleMovements()
+                                board.handlePiecePositioning()
+                            }
                         }
                     }
                  
@@ -55,6 +59,10 @@ struct BoardSquare: View {
                 board.piecePlacing = position
             }
         })
+    }
+    
+    func isPlayerTurn() -> Bool {
+        return board.playerTurn == piece.pieceType
     }
 }
 

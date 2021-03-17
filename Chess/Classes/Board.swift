@@ -26,6 +26,7 @@ class Board: ObservableObject {
     @Published var pieceLocation : Location = Location.init(x: 0, y: 0) // Initial location of the piece being dragged
     @Published var piecePlacing : Location = Location.init(x: 0, y: 0) // Last location the user passed his mouse when draging a piece
     @Published var isMovingPiece : Bool = false
+    @Published var playerTurn : String = "Light" // Player turn to play
     
     // Func: Initializes the board with their respective:
     //  - Color, Piece, Size, Position
@@ -144,6 +145,7 @@ class Board: ObservableObject {
         if found {
             a_BoardSquare[pieceLocation.y][pieceLocation.x].piece = Piece.empty
             a_BoardSquare[piecePlacing.y][piecePlacing.x].piece = piece
+            changeTurn()
         }
     }
 
@@ -222,5 +224,9 @@ class Board: ObservableObject {
     
     func isOpponetPiece(location : Location) -> Bool {
         return piece.pieceType != a_BoardSquare[location.y][location.x].piece.pieceType
+    }
+    
+    func changePlayerTurn() {
+        playerTurn = (playerTurn == "Light" ? "Dark" : "Light")
     }
 }
