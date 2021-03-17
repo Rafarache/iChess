@@ -34,7 +34,7 @@ struct BoardSquare: View {
                     .onChanged{ gesture in
                         board.globalOffset = gesture.translation
                         board.piece = piece
-                        board.piecePosition = position
+                        board.pieceLocation = position
                         board.isMovingPiece = true
                         self.isMovingPiece = true
                         board.showPossibleMovements()

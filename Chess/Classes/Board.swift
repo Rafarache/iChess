@@ -13,23 +13,24 @@ class Board: ObservableObject {
     private init() { }
     static let shared = Board()
     
-    var colorOne: Color = .white
-    var colorTwo: Color = .green
+    // Colors
+    var colorOne: Color = .white // Main color
+    var colorTwo: Color = .green // Secondary color
     var auxColor: Color = Color.yellow
     var auxColorOpacity: Double = Double(0.4)
     let squareSize = CGFloat(60)
     
-    @Published var a_BoardSquare = [[BoardSquare]]()
-    @Published var globalOffset : CGSize = CGSize.zero
-    @Published var piece : Piece = Piece.empty
-    @Published var piecePosition : Location = Location.init(x: 0, y: 0)
-    @Published var piecePlacing : Location = Location.init(x: 0, y: 0)
+    @Published var a_BoardSquare = [[BoardSquare]]() // Array of the board
+    @Published var globalOffset : CGSize = CGSize.zero // Offset used for dragging the piece
+    @Published var piece : Piece = Piece.empty // Piece being dragged
+    @Published var pieceLocation : Location = Location.init(x: 0, y: 0) // Initial location of the piece being dragged
+    @Published var piecePlacing : Location = Location.init(x: 0, y: 0) // Last location the user passed his mouse when draging a piece
     @Published var isMovingPiece : Bool = false
     
+    // Func: Initializes the board with their respective:
+    //  - Color, Piece, Size, Position
     func initBoard() {
-        
         let initialBoard = "RNBQKBNR|PPPPPPPP|8|8|8|8|pppppppp|rnbqkbnr"
-        
         let decodedBoard = decodeBoardPiecesString(board: initialBoard)
         
         for collum in 0...7 {
@@ -53,6 +54,7 @@ class Board: ObservableObject {
         }
     }
     
+    // Func: Return an array of all pieces
     func decodeBoardPiecesString(board : String) -> [Piece] {
         var a_BoardSquare = [Piece]()
         
@@ -88,12 +90,13 @@ class Board: ObservableObject {
         return number % 2 == 1
     }
 
+    // Func: Iterates throught all possible movements of the piece and retuns a list cotaining all of them
     func forEachMovement(_ function : (Location)->()) {
         for move in piece.movement {
             if piece.movementType == "Multiplied" {
                 var foundFirstPiece = false
                 for mult in 1...7 {
-                    let possibleLocation = Location.init(x: (move.x * mult) + piecePosition.x, y: (move.y * mult) + piecePosition.y)
+                    let possibleLocation = Location.init(x: (move.x * mult) + pieceLocation.x, y: (move.y * mult) + pieceLocation.y)
                     if (possibleLocation.isValidLocation() && !foundFirstPiece) {
                         function(possibleLocation)
                         if locationHasPiece(location: possibleLocation) {
@@ -105,14 +108,14 @@ class Board: ObservableObject {
             else {
                 if pieceIsPawn() {
                     var pawnAtackLocations = [
-                        Location(x: piecePosition.x + 1, y: piecePosition.y + piece.movement[0].y),
-                        Location(x: piecePosition.x - 1, y: piecePosition.y + piece.movement[0].y)
+                        Location(x: pieceLocation.x + 1, y: pieceLocation.y + piece.movement[0].y),
+                        Location(x: pieceLocation.x - 1, y: pieceLocation.y + piece.movement[0].y)
                     ]
                     for possibleAttack in pawnAtackLocations {
                         if possibleAttack.isValidLocation() { function(possibleAttack) }
                     }
                 }
-                let possibleLocation = Location.init(x: move.x + piecePosition.x, y: move.y + piecePosition.y)
+                let possibleLocation = Location.init(x: move.x + pieceLocation.x, y: move.y + pieceLocation.y)
                 if (possibleLocation.isValidLocation()) {
                     function(possibleLocation)
                 }
@@ -120,6 +123,7 @@ class Board: ObservableObject {
         }
     }
     
+    // Finc: Get all possible movement of the piece, even not valid movements
     func getPossibleMovements() -> [Location] {
         var possibleLocations = [Location]()
         
@@ -130,6 +134,7 @@ class Board: ObservableObject {
         return possibleLocations
     }
     
+    // Func: If the piece being draged is moved to a valid square, move the piece
     func handlePiecePositioning() {
         let possibleMovements = getPossibleMovements()
         let filteredMovements = filterMovements(movements: possibleMovements)
@@ -137,13 +142,12 @@ class Board: ObservableObject {
             return $0.x == piecePlacing.x && $0.y == piecePlacing.y
         }.count > 0
         if found {
-            a_BoardSquare[piecePosition.y][piecePosition.x].piece = Piece.empty
+            a_BoardSquare[pieceLocation.y][pieceLocation.x].piece = Piece.empty
             a_BoardSquare[piecePlacing.y][piecePlacing.x].piece = piece
         }
     }
 
     func showPossibleMovements() {
-        
         var possibleMovements = getPossibleMovements()
         var validMovements = filterMovements(movements : possibleMovements)
         
@@ -152,6 +156,7 @@ class Board: ObservableObject {
         }
     }
     
+    // Func: hide all possible movements of piece, even if is not valid
     func hidePossibleMovements() {
         forEachMovement({(possibleLocation) in
             var color = colorOne
@@ -172,14 +177,16 @@ class Board: ObservableObject {
         for move in movements {
             if move.isValidLocation() {
                 if pieceIsPawn() {
-                    if (move.y - piecePosition.y == 2) || (move.y - piecePosition.y == -2) {
-                        if piece == .lightPawn && piecePosition.y == 6 && (move.y - piecePosition.y == -2) {
+                    // Is first double jump
+                    if (move.y - pieceLocation.y == 2) || (move.y - pieceLocation.y == -2) {
+                        if piece == .lightPawn && pieceLocation.y == 6 && (move.y - pieceLocation.y == -2) {
                             validMovements.append(move)
                         }
-                        else if piece == .darkPawn && piecePosition.y == 1 && (move.y - piecePosition.y == 2) {
+                        else if piece == .darkPawn && pieceLocation.y == 1 && (move.y - pieceLocation.y == 2) {
                             validMovements.append(move)
                         }
                     }
+                    // Is one square movement
                     else {
                         if !locationHasPiece(location: move) && !isPawnAttack(movement: move) {
                             validMovements.append(move)
@@ -210,7 +217,7 @@ class Board: ObservableObject {
     }
     
     func isPawnAttack(movement : Location) -> Bool {
-        return piecePosition.x != movement.x
+        return pieceLocation.x != movement.x
     }
     
     func isOpponetPiece(location : Location) -> Bool {
