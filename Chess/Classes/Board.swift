@@ -94,7 +94,7 @@ class Board: ObservableObject {
                 var foundFirstPiece = false
                 for mult in 1...7 {
                     let possibleLocation = Location.init(x: (move.x * mult) + piecePosition.x, y: (move.y * mult) + piecePosition.y)
-                    if (possibleLocation.isValid() && !foundFirstPiece) {
+                    if (possibleLocation.isValidLocation() && !foundFirstPiece) {
                         function(possibleLocation)
                         if locationHasPiece(location: possibleLocation) {
                             foundFirstPiece = true
@@ -109,11 +109,11 @@ class Board: ObservableObject {
                         Location(x: piecePosition.x - 1, y: piecePosition.y + piece.movement[0].y)
                     ]
                     for possibleAttack in pawnAtackLocations {
-                        if possibleAttack.isValid() { function(possibleAttack) }
+                        if possibleAttack.isValidLocation() { function(possibleAttack) }
                     }
                 }
                 let possibleLocation = Location.init(x: move.x + piecePosition.x, y: move.y + piecePosition.y)
-                if (possibleLocation.isValid()) {
+                if (possibleLocation.isValidLocation()) {
                     function(possibleLocation)
                 }
             }
@@ -170,13 +170,23 @@ class Board: ObservableObject {
         var validMovements = [Location]()
         
         for move in movements {
-            if move.isValid() {
+            if move.isValidLocation() {
                 if pieceIsPawn() {
-                    if !locationHasPiece(location: move) && !isPawnAttack(movement: move) {
-                        validMovements.append(move)
+                    if (move.y - piecePosition.y == 2) || (move.y - piecePosition.y == -2) {
+                        if piece == .lightPawn && piecePosition.y == 6 && (move.y - piecePosition.y == -2) {
+                            validMovements.append(move)
+                        }
+                        else if piece == .darkPawn && piecePosition.y == 1 && (move.y - piecePosition.y == 2) {
+                            validMovements.append(move)
+                        }
                     }
-                    if locationHasPiece(location: move) && isPawnAttack(movement: move) && isOpponetPiece(location: move) {
-                        validMovements.append(move)
+                    else {
+                        if !locationHasPiece(location: move) && !isPawnAttack(movement: move) {
+                            validMovements.append(move)
+                        }
+                        else if locationHasPiece(location: move) && isPawnAttack(movement: move) && isOpponetPiece(location: move) {
+                            validMovements.append(move)
+                        }
                     }
                 }
                 else {
