@@ -108,7 +108,7 @@ class Board: ObservableObject {
             }
             else {
                 if pieceIsPawn() {
-                    var pawnAtackLocations = [
+                    let pawnAtackLocations = [
                         Location(x: pieceLocation.x + 1, y: pieceLocation.y + piece.movement[0].y),
                         Location(x: pieceLocation.x - 1, y: pieceLocation.y + piece.movement[0].y)
                     ]
@@ -145,13 +145,13 @@ class Board: ObservableObject {
         if found {
             a_BoardSquare[pieceLocation.y][pieceLocation.x].piece = Piece.empty
             a_BoardSquare[piecePlacing.y][piecePlacing.x].piece = piece
-            changeTurn()
+            changePlayerTurn()
         }
     }
 
     func showPossibleMovements() {
-        var possibleMovements = getPossibleMovements()
-        var validMovements = filterMovements(movements : possibleMovements)
+        let possibleMovements = getPossibleMovements()
+        let validMovements = filterMovements(movements : possibleMovements)
         
         for move in validMovements {
             a_BoardSquare[move.y][move.x].color = auxColor
