@@ -18,7 +18,12 @@ class Board: ObservableObject {
     var colorTwo: Color = .green // Secondary color
     var auxColor: Color = Color.yellow
     var auxColorOpacity: Double = Double(0.4)
+    
+    // Constants
     let squareSize = CGFloat(60)
+    
+    // Board History
+    var movementHistory = [[Location]]() // Array com [ initio
     
     @Published var a_BoardSquare = [[BoardSquare]]() // Array of the board
     @Published var globalOffset : CGSize = CGSize.zero // Offset used for dragging the piece
@@ -55,7 +60,7 @@ class Board: ObservableObject {
         }
     }
     
-    // Func: Return an array of all pieces
+    // Func: Return an array of all pieces start Locations
     func decodeBoardPiecesString(board : String) -> [Piece] {
         var a_BoardSquare = [Piece]()
         
@@ -107,7 +112,7 @@ class Board: ObservableObject {
                 }
             }
             else {
-                if pieceIsPawn() {
+                if piece.type == "Pawn" {
                     let pawnAtackLocations = [
                         Location(x: pieceLocation.x + 1, y: pieceLocation.y + piece.movement[0].y),
                         Location(x: pieceLocation.x - 1, y: pieceLocation.y + piece.movement[0].y)
@@ -178,7 +183,7 @@ class Board: ObservableObject {
         
         for move in movements {
             if move.isValidLocation() {
-                if pieceIsPawn() {
+                if piece.type == "Pawn" {
                     // Is first double jump
                     if (move.y - pieceLocation.y == 2) || (move.y - pieceLocation.y == -2) {
                         if piece == .lightPawn && pieceLocation.y == 6 && (move.y - pieceLocation.y == -2) {
@@ -214,16 +219,12 @@ class Board: ObservableObject {
         return validMovements
     }
     
-    func pieceIsPawn() -> Bool {
-        return piece == .lightPawn || piece == .darkPawn
-    }
-    
     func isPawnAttack(movement : Location) -> Bool {
         return pieceLocation.x != movement.x
     }
     
     func isOpponetPiece(location : Location) -> Bool {
-        return piece.pieceType != a_BoardSquare[location.y][location.x].piece.pieceType
+        return piece.color != a_BoardSquare[location.y][location.x].piece.color
     }
     
     func changePlayerTurn() {

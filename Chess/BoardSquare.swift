@@ -62,7 +62,7 @@ struct BoardSquare: View {
     }
     
     func isPlayerTurn() -> Bool {
-        return board.playerTurn == piece.pieceType
+        return board.playerTurn == piece.color
     }
 }
 

@@ -62,7 +62,8 @@ enum Piece : String {
             Movement.init(x: 2, y: 1),
             Movement.init(x: 2, y: -1),
             Movement.init(x: -2, y: 1),
-            Movement.init(x: -2, y: -1),        ]
+            Movement.init(x: -2, y: -1),
+        ]
         case .lightBishop, .darkBishop: return [
             Movement.init(x: 1, y: 1),
             Movement.init(x: 1, y: -1),
@@ -79,7 +80,19 @@ enum Piece : String {
         }
     }
     
-    var pieceType : String {
+    var type : String {
+        switch self {
+        case .lightPawn, .darkPawn: return "Pawn"
+        case .lightKing, .darkKing: return "King"
+        case .lightQueen, .darkQueen: return "Queen"
+        case .lightKnight, .darkKnight: return "Knight"
+        case .lightBishop, .darkBishop: return "Bishop"
+        case .lightRook, .darkRook: return "Rook"
+        default: return "Empty"
+        }
+    }
+    
+    var color : String {
         switch self {
         case .darkPawn, .darkKing, .darkQueen, .darkKnight, .darkBishop, .darkRook: return "Dark"
         case .lightKing, .lightPawn, .lightQueen, .lightKnight, .lightBishop, .lightRook: return "Light"
