@@ -23,7 +23,7 @@ class Board: ObservableObject {
     let squareSize = CGFloat(60)
     
     // Board History
-    var movementHistory = [[Location]]() // Array com [ initio
+    var movementHistory = [(Location, Location, Piece)]() // Tuple with ( initial location , placing location, piece )
     
     @Published var a_BoardSquare = [[BoardSquare]]() // Array of the board
     @Published var globalOffset : CGSize = CGSize.zero // Offset used for dragging the piece
@@ -150,7 +150,9 @@ class Board: ObservableObject {
         if found {
             a_BoardSquare[pieceLocation.y][pieceLocation.x].piece = Piece.empty
             a_BoardSquare[piecePlacing.y][piecePlacing.x].piece = piece
+            
             changePlayerTurn()
+            movementHistory.append((pieceLocation, piecePlacing, piece))
         }
     }
 
