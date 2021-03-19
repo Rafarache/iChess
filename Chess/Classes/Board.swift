@@ -140,6 +140,20 @@ class Board: ObservableObject {
         return possibleLocations
     }
     
+    func updateBoardSquares() {
+        if isAnPassantValid(location: piecePlacing) {
+            if playerTurn == "Light" {
+                a_BoardSquare[piecePlacing.y + 1][piecePlacing.x].piece = Piece.empty
+            }
+            else {
+                a_BoardSquare[piecePlacing.y - 1][piecePlacing.x].piece = Piece.empty
+            }
+        }
+        
+        a_BoardSquare[pieceLocation.y][pieceLocation.x].piece = Piece.empty
+        a_BoardSquare[piecePlacing.y][piecePlacing.x].piece = piece
+    }
+    
     // Func: If the piece being draged is moved to a valid square, move the piece
     func handlePiecePositioning() {
         let possibleMovements = getPossibleMovements()
@@ -149,18 +163,7 @@ class Board: ObservableObject {
         }.count > 0
         // if the movement the player choose was in a valid movement, accept the movement
         if found {
-            if isAnPassantValid(location: piecePlacing) {
-                if playerTurn == "Light" {
-                    a_BoardSquare[piecePlacing.y + 1][piecePlacing.x].piece = Piece.empty
-                }
-                else {
-                    a_BoardSquare[piecePlacing.y - 1][piecePlacing.x].piece = Piece.empty
-                }
-            }
-            
-            a_BoardSquare[pieceLocation.y][pieceLocation.x].piece = Piece.empty
-            a_BoardSquare[piecePlacing.y][piecePlacing.x].piece = piece
-            
+            updateBoardSquares()
             changePlayerTurn()
             movementHistory.append((pieceLocation, piecePlacing, piece))
         }
