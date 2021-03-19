@@ -143,10 +143,11 @@ class Board: ObservableObject {
     // Func: If the piece being draged is moved to a valid square, move the piece
     func handlePiecePositioning() {
         let possibleMovements = getPossibleMovements()
-        let filteredMovements = filterMovements(movements: possibleMovements)
-        let found = filteredMovements.filter{
+        let validMovements = filterValidMovements(movements: possibleMovements)
+        let found = validMovements.filter{
             return $0.x == piecePlacing.x && $0.y == piecePlacing.y
         }.count > 0
+        // if the movement the player choose was in a valid movement, accept the movement
         if found {
             a_BoardSquare[pieceLocation.y][pieceLocation.x].piece = Piece.empty
             a_BoardSquare[piecePlacing.y][piecePlacing.x].piece = piece
@@ -158,7 +159,7 @@ class Board: ObservableObject {
 
     func showPossibleMovements() {
         let possibleMovements = getPossibleMovements()
-        let validMovements = filterMovements(movements : possibleMovements)
+        let validMovements = filterValidMovements(movements : possibleMovements)
         
         for move in validMovements {
             a_BoardSquare[move.y][move.x].color = auxColor
@@ -180,7 +181,7 @@ class Board: ObservableObject {
         return a_BoardSquare[location.y][location.x].piece != .empty
     }
     
-    func filterMovements(movements : [Location]) -> [Location] {
+    func filterValidMovements(movements : [Location]) -> [Location] {
         var validMovements = [Location]()
         
         for move in movements {
