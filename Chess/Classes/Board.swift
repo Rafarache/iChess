@@ -149,7 +149,7 @@ class Board: ObservableObject {
         }.count > 0
         // if the movement the player choose was in a valid movement, accept the movement
         if found {
-            if isAnPassantValid(movement: piecePlacing) {
+            if isAnPassantValid(location: piecePlacing) {
                 if playerTurn == "Light" {
                     a_BoardSquare[piecePlacing.y + 1][piecePlacing.x].piece = Piece.empty
                 }
@@ -208,17 +208,17 @@ class Board: ObservableObject {
                     // Is one square movement
                     else {
                         // Go up one square
-                        if !locationHasPiece(location: move) && !isPawnAttack(movement: move) {
+                        if !locationHasPiece(location: move) && !isPawnAttack(location: move) {
                             validMovements.append(move)
                         }
                         // Its a capture movement
-                        else if isPawnAttack(movement: move) {
+                        else if isPawnAttack(location: move) {
                             // Normal capture
                             if locationHasPiece(location: move) && isOpponetPiece(location: move) {
                                 validMovements.append(move)
                             }
                             // An passant capture
-                            else if isAnPassantValid(movement: move) {
+                            else if isAnPassantValid(location: move) {
                                 validMovements.append(move)
                             }
                         }
@@ -240,8 +240,8 @@ class Board: ObservableObject {
         return validMovements
     }
     
-    func isPawnAttack(movement : Location) -> Bool {
-        return pieceLocation.x != movement.x
+    func isPawnAttack(location : Location) -> Bool {
+        return pieceLocation.x != location.x
     }
     
     func isOpponetPiece(location : Location) -> Bool {
@@ -252,14 +252,14 @@ class Board: ObservableObject {
         playerTurn = (playerTurn == "Light" ? "Dark" : "Light")
     }
     
-    func isAnPassantValid(movement: Location) -> Bool {
+    func isAnPassantValid(location: Location) -> Bool {
         if let lastMovement = movementHistory.last {
             let lastMovementX = lastMovement.placingLocation.x
             let lastMovementY = lastMovement.placingLocation.y
             
-            var areInTheSameRow = (pieceLocation.y == lastMovementY)
+            let areInTheSameRow = (pieceLocation.y == lastMovementY)
             
-            return lastMovementWasDoubleJump() && (movement.x == lastMovementX) && areInTheSameRow
+            return lastMovementWasDoubleJump() && (location.x == lastMovementX) && areInTheSameRow
         }
         return false
     }
