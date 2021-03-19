@@ -23,7 +23,7 @@ class Board: ObservableObject {
     let squareSize = CGFloat(60)
     
     // Board History
-    var movementHistory = [(Location, Location, Piece)]() // Tuple with ( initial location , placing location, piece )
+    var movementHistory = [(initalLocation: Location, placingLocation: Location, piece: Piece)]() // Tuple with ( initial location , placing location, piece )
     
     @Published var a_BoardSquare = [[BoardSquare]]() // Array of the board
     @Published var globalOffset : CGSize = CGSize.zero // Offset used for dragging the piece
@@ -149,6 +149,15 @@ class Board: ObservableObject {
         }.count > 0
         // if the movement the player choose was in a valid movement, accept the movement
         if found {
+            if isAnPassantValid(movement: piecePlacing) {
+                if playerTurn == "Light" {
+                    a_BoardSquare[piecePlacing.y + 1][piecePlacing.x].piece = Piece.empty
+                }
+                else {
+                    a_BoardSquare[piecePlacing.y - 1][piecePlacing.x].piece = Piece.empty
+                }
+            }
+            
             a_BoardSquare[pieceLocation.y][pieceLocation.x].piece = Piece.empty
             a_BoardSquare[piecePlacing.y][piecePlacing.x].piece = piece
             
@@ -198,11 +207,20 @@ class Board: ObservableObject {
                     }
                     // Is one square movement
                     else {
+                        // Go up one square
                         if !locationHasPiece(location: move) && !isPawnAttack(movement: move) {
                             validMovements.append(move)
                         }
-                        else if locationHasPiece(location: move) && isPawnAttack(movement: move) && isOpponetPiece(location: move) {
-                            validMovements.append(move)
+                        // Its a capture movement
+                        else if isPawnAttack(movement: move) {
+                            // Normal capture
+                            if locationHasPiece(location: move) && isOpponetPiece(location: move) {
+                                validMovements.append(move)
+                            }
+                            // An passant capture
+                            else if isAnPassantValid(movement: move) {
+                                validMovements.append(move)
+                            }
                         }
                     }
                 }
@@ -232,5 +250,27 @@ class Board: ObservableObject {
     
     func changePlayerTurn() {
         playerTurn = (playerTurn == "Light" ? "Dark" : "Light")
+    }
+    
+    func isAnPassantValid(movement: Location) -> Bool {
+        if let lastMovement = movementHistory.last {
+            let lastMovementX = lastMovement.placingLocation.x
+            let lastMovementY = lastMovement.placingLocation.y
+            
+            var areInTheSameRow = (pieceLocation.y == lastMovementY)
+            
+            return lastMovementWasDoubleJump() && (movement.x == lastMovementX) && areInTheSameRow
+        }
+        return false
+    }
+        
+    func lastMovementWasDoubleJump() -> Bool {
+        if let lastMovement = movementHistory.last {
+            let initialLocation = lastMovement.initalLocation
+            let placingLocation = lastMovement.placingLocation
+            
+            return ((placingLocation.y - initialLocation.y == 2) || (placingLocation.y - initialLocation.y == -2))
+        }
+        return false
     }
 }
