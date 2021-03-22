@@ -25,6 +25,11 @@ class Board: ObservableObject {
     // Board History
     var movementHistory = [(initalLocation: Location, placingLocation: Location, piece: Piece)]() // Tuple with ( initial location , placing location, piece )
     
+    // Modal
+    @Published var isModalVisible = false
+    @Published var modalContent : ModalContent = .empty
+
+    
     @Published var a_BoardSquare = [[BoardSquare]]() // Array of the board
     @Published var globalOffset : CGSize = CGSize.zero // Offset used for dragging the piece
     @Published var piece : Piece = Piece.empty // Piece being dragged
@@ -141,13 +146,17 @@ class Board: ObservableObject {
     }
     
     func updateBoardSquares() {
-        if isAnPassantValid(location: piecePlacing) {
+        if isAnPassantMovement(location: piecePlacing) {
             if playerTurn == "Light" {
                 a_BoardSquare[piecePlacing.y + 1][piecePlacing.x].piece = Piece.empty
             }
             else {
                 a_BoardSquare[piecePlacing.y - 1][piecePlacing.x].piece = Piece.empty
             }
+        }
+        else if isPromotionMovement(location: piecePlacing) {
+            isModalVisible = true
+            modalContent = .promotion
         }
         
         a_BoardSquare[pieceLocation.y][pieceLocation.x].piece = Piece.empty
@@ -221,7 +230,7 @@ class Board: ObservableObject {
                                 validMovements.append(move)
                             }
                             // An passant capture
-                            else if isAnPassantValid(location: move) {
+                            else if isAnPassantMovement(location: move) {
                                 validMovements.append(move)
                             }
                         }
@@ -255,7 +264,7 @@ class Board: ObservableObject {
         playerTurn = (playerTurn == "Light" ? "Dark" : "Light")
     }
     
-    func isAnPassantValid(location: Location) -> Bool {
+    func isAnPassantMovement(location: Location) -> Bool {
         if let lastMovement = movementHistory.last {
             let lastMovementX = lastMovement.placingLocation.x
             let lastMovementY = lastMovement.placingLocation.y
@@ -275,5 +284,25 @@ class Board: ObservableObject {
             return ((placingLocation.y - initialLocation.y == 2) || (placingLocation.y - initialLocation.y == -2))
         }
         return false
+    }
+    
+    func isPromotionMovement(location : Location) -> Bool {
+        if piece.type == "Pawn" {
+            if ( playerTurn == "Light" && piecePlacing.y == 0 ) || ( playerTurn == "Dark" && piecePlacing.y == 7 ){
+                return true
+            }
+            return false
+        }
+        return false
+    }
+    
+    // Promotion
+    func promotePawn (to piece : Piece) {
+        self.piece = piece
+        isModalVisible = false
+        
+        if let lastMovementLocation = movementHistory.last?.placingLocation {
+            a_BoardSquare[lastMovementLocation.y][lastMovementLocation.x].piece = piece
+        }
     }
 }

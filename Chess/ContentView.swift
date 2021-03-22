@@ -42,6 +42,9 @@ struct ContentView: View {
                     }
                 }
             }
+            if board.isModalVisible {
+                Modalview()
+            }
         }
     }
 }
