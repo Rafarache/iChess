@@ -38,7 +38,7 @@ struct BoardSquare: View {
                             board.pieceLocation = position
                             board.isMovingPiece = true
                             self.isMovingPiece = true
-                            board.showPossibleMovements()
+                            board.showValidMovements()
                         }
                     }
                     .onEnded{ _ in
@@ -46,7 +46,6 @@ struct BoardSquare: View {
                             board.isMovingPiece = false
                             self.isMovingPiece = false
                             if piece != .empty {
-                                board.hidePossibleMovements()
                                 board.handlePiecePositioning()
                             }
                         }
