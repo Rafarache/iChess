@@ -16,6 +16,11 @@ struct Modalview: View {
     var body: some View {
         VStack {
             switch board.modalContent {
+            case .playerWon:
+                VStack {
+                    Text("\(board.playerTurn == "Light" ? "Dark" : "Light") pieces won!!")
+                    Button("Start again", action: board.resetBoard)
+                }
             case .settings:
                 Text("Settings")
             case .promotion:
@@ -70,6 +75,7 @@ struct Modalview: View {
 enum ModalContent {
     case settings
     case promotion
+    case playerWon
     case empty
 }
 

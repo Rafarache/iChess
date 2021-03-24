@@ -65,6 +65,18 @@ class Board: ObservableObject {
         }
     }
     
+    func resetBoard() {
+        a_BoardSquare = [[BoardSquare]]() // Array of the board
+        globalOffset = CGSize.zero // Offset used for dragging the piece
+        piece = Piece.empty // Piece being dragged
+        pieceLocation = Location.init(x: 0, y: 0) // Initial location of the piece being dragged
+        piecePlacing = Location.init(x: 0, y: 0) // Last location the user passed his mouse when draging a piece
+        isMovingPiece = false
+        playerTurn = "Light" // Player turn to play
+        isModalVisible = false
+        initBoard()
+    }
+    
     // Func: Return an array of all pieces start Locations
     func decodeBoardPiecesString(board : String) -> [Piece] {
         var a_BoardSquare = [Piece]()
@@ -171,6 +183,10 @@ class Board: ObservableObject {
         if kingIsInCheck(kingColor: attackedKingColor, board: a_BoardSquare) {
             var kingLocation = findKing(color: attackedKingColor, board: a_BoardSquare)
             a_BoardSquare[kingLocation.y][kingLocation.x].color = .red
+            if kingIsInCheckMate(kingColor: attackedKingColor, board : a_BoardSquare) {
+                isModalVisible = true
+                modalContent = .playerWon
+            }
         }
     }
     
@@ -191,8 +207,8 @@ class Board: ObservableObject {
             if !kingIsInCheck(kingColor: playerTurn, board: nextBoard) {
                 resetSquareColors()
                 updateBoardSquares()
-                changePlayerTurn()
                 movementHistory.append((pieceLocation, piecePlacing, piece))
+                changePlayerTurn()
             }
         }
     }
@@ -236,29 +252,29 @@ class Board: ObservableObject {
         return board[location.y][location.x].piece != .empty
     }
     
-    func filterValidMovements(movements: [Location], piece: Piece, pieceLocation: Location, board: [[BoardSquare]]) -> [Location] {
+    func filterValidMovements(movements: [Location], piece: Piece, pieceLocation: Location, board: [[BoardSquare]], onlyPawnAttack : Bool = false) -> [Location] {
         var validMovements = [Location]()
         
         for move in movements {
             if move.isValidLocation() {
                 if piece.type == "Pawn" {
                     // Is first double jump
-                    if (move.y - pieceLocation.y == 2) || (move.y - pieceLocation.y == -2) {
-                        if piece == .lightPawn && pieceLocation.y == 6 && (move.y - pieceLocation.y == -2) {
+                    if (move.y - pieceLocation.y == 2) || (move.y - pieceLocation.y == -2) && !onlyPawnAttack {
+                        if piece == .lightPawn && pieceLocation.y == 6 && (move.y - pieceLocation.y == -2) && !locationHasPiece(location: Location(x: pieceLocation.x, y: pieceLocation.y - 1), board: board) && !locationHasPiece(location: Location(x: pieceLocation.x, y: pieceLocation.y - 2), board: board) {
                             validMovements.append(move)
                         }
-                        else if piece == .darkPawn && pieceLocation.y == 1 && (move.y - pieceLocation.y == 2) {
+                        else if piece == .darkPawn && pieceLocation.y == 1 && (move.y - pieceLocation.y == 2) && !locationHasPiece(location: Location(x: pieceLocation.x, y: pieceLocation.y + 1),board: board) && !locationHasPiece(location: Location(x: pieceLocation.x, y: pieceLocation.y + 2),board: board) {
                             validMovements.append(move)
                         }
                     }
                     // Is one square movement
                     else {
                         // Go up one square
-                        if !locationHasPiece(location: move, board: board) && !isPawnAttack(location: move) {
+                        if !locationHasPiece(location: move, board: board) && !isPawnAttack(location: pieceLocation, movement: move, board: board) && !onlyPawnAttack{
                             validMovements.append(move)
                         }
                         // Its a capture movement
-                        else if isPawnAttack(location: move) {
+                        else if isPawnAttack(location: pieceLocation, movement: move, board: board) {
                             // Normal capture
                             if locationHasPiece(location: move, board: board) && isOpponetPiece(location: move, piece: piece, board: board) {
                                 validMovements.append(move)
@@ -286,8 +302,8 @@ class Board: ObservableObject {
         return validMovements
     }
     
-    func isPawnAttack(location : Location) -> Bool {
-        return pieceLocation.x != location.x
+    func isPawnAttack(location : Location, movement: Location, board: [[BoardSquare]]) -> Bool {
+        return location.x != movement.x
     }
     
     func isOpponetPiece(location : Location, piece: Piece, board: [[BoardSquare]]) -> Bool {
@@ -348,7 +364,7 @@ class Board: ObservableObject {
                 if square.piece != .empty && square.piece.color != kingColor {
                     let piece = square.piece
                     let possibleMovements = getPossibleMovements(piece: piece, location: square.position, board: board)
-                    let validMovements = filterValidMovements(movements : possibleMovements, piece: piece, pieceLocation: square.position, board: board)
+                    let validMovements = filterValidMovements(movements : possibleMovements, piece: piece, pieceLocation: square.position, board: board, onlyPawnAttack: true)
                     for movement in validMovements {
                         if movement.x == kingLocation.x && movement.y == kingLocation.y {
                             return true
@@ -358,6 +374,35 @@ class Board: ObservableObject {
             }
         }
         return false
+    }
+    
+    func kingIsInCheckMate(kingColor: String, board : [[BoardSquare]]) -> Bool {
+        let kingPiece = kingColor == "Light" ? Piece.lightKing : Piece.darkKing
+        let kingLocation = findKing(color: kingColor, board: board)
+        let kingMovemets = getPossibleMovements(piece: kingPiece, location: kingLocation, board: board)
+        let kingValidMovements = filterValidMovements(movements: kingMovemets, piece: kingPiece, pieceLocation: kingLocation, board: board)
+        var kingSquaresBeingAttacked = [Location]()
+        
+        for collum in board {
+            for square in collum {
+                if square.piece != .empty && square.piece.color == kingColor {
+                    let piece = square.piece
+                    let possibleMovements = getPossibleMovements(piece: piece, location: square.position, board: board)
+                    let validMovements = filterValidMovements(movements : possibleMovements, piece: piece, pieceLocation: square.position, board: board, onlyPawnAttack: true)
+                    for movement in validMovements {
+                        
+                        var nextBoard = a_BoardSquare
+                        nextBoard[square.position.y][square.position.x].piece = .empty
+                        nextBoard[movement.y][movement.x].piece = piece
+                        
+                        if !kingIsInCheck(kingColor: kingColor, board: nextBoard) {
+                            return false
+                        }
+                    }
+                }
+            }
+        }
+        return true
     }
     
     func findKing(color : String, board: [[BoardSquare]]) -> Location {
